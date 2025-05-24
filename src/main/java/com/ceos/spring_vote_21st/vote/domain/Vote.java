@@ -1,6 +1,7 @@
 package com.ceos.spring_vote_21st.vote.domain;
 
 import com.ceos.spring_vote_21st.member.domain.Member;
+import com.ceos.spring_vote_21st.vote.web.dto.VoteCreateRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,4 +28,16 @@ public class Vote {
 
     @ManyToOne(fetch = LAZY) @JoinColumn(name = "election_id")
     private Election election;
+
+    public static Vote create(Member member, Candidate candidate, Election election) {
+        Vote vote = Vote.builder()
+                .member(member)
+                .candidate(candidate)
+                .election(election)
+                .build();
+
+        election.addVote(vote);
+
+        return vote;
+    }
 }
