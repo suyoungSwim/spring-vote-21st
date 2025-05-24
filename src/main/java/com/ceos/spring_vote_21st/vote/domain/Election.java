@@ -24,15 +24,27 @@ public class Election {
     @Enumerated(STRING)
     private ElectionStatus electionStatus;
 
+    private Section section;
+
     private LocalDateTime startedAt;
 
     private LocalDateTime finishedAt;
 
-    /** 양방향 연관관계는 지양하기로 했으나, Vote는 단독조회하는 경우가 잘 없으며 Election과 영속성 상태를 같이 가져가는 것이 자연스러워 양방향 cascade를 택함 */
-    @OneToMany(mappedBy = "election", cascade = CascadeType.ALL, orphanRemoval = true)
+    /** Vote는 단독 조회 필요*/
+    @OneToMany(mappedBy = "election")
     private List<Vote> votes = new ArrayList<>();
 
     /** 양방향 연관관계는 지양하기로 했으나, Candidate는 단독조회하는 경우가 잘 없으며 Election과 영속성 상태를 같이 가져가는 것이 자연스러워 양방향 cascade를 택함 */
     @OneToMany(mappedBy = "election", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Candidate> candidates = new ArrayList<>();
+
+    //연관관계 편의 메서드
+    public void addVote(Vote vote) {
+        votes.add(vote);
+    }
+
+    public void addCandidate(Candidate candidate) {
+        candidates.add(candidate);
+    }
+
 }
