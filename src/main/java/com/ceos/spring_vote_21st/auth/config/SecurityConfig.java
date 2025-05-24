@@ -1,9 +1,12 @@
-package com.ceos.spring_vote_21st.config;
+package com.ceos.spring_vote_21st.auth.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+@Configuration
 public class SecurityConfig {
 
     @Bean
@@ -22,5 +25,10 @@ public class SecurityConfig {
 
         // 로그인 폼은 Spring Security 기본 폼 사용
         return http.build();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
