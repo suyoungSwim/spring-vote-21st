@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static jakarta.persistence.EnumType.STRING;
 import static lombok.AccessLevel.PROTECTED;
@@ -25,4 +27,12 @@ public class Election {
     private LocalDateTime startedAt;
 
     private LocalDateTime finishedAt;
+
+    /** 양방향 연관관계는 지양하기로 했으나, Vote는 단독조회하는 경우가 잘 없으며 Election과 영속성 상태를 같이 가져가는 것이 자연스러워 양방향 cascade를 택함 */
+    @OneToMany(mappedBy = "election", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Vote> votes = new ArrayList<>();
+
+    /** 양방향 연관관계는 지양하기로 했으나, Candidate는 단독조회하는 경우가 잘 없으며 Election과 영속성 상태를 같이 가져가는 것이 자연스러워 양방향 cascade를 택함 */
+    @OneToMany(mappedBy = "election", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Candidate> candidates = new ArrayList<>();
 }
