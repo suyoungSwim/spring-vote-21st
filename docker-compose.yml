@@ -1,0 +1,38 @@
+#Dockerfile은 오직 server에 대한 설계도
+#docker-compose는 여러 컨테이너들 사이의 관계. 여기선 server와 mysql
+
+#app(server)은 Dockerfile로 만들이진 이미지로 띄우고, db는 공식 이미지로 컨테이너를 띄움
+
+
+services:                   #컨테이너들 정의. 여기선 app(server)와 db
+  app:
+    build: .                # 현재 디렉토리에 있는 Dokcerfile을 보고 이미지를 새로 빌드해서 컨테이너를 띄움.
+    container_name: vote-server
+    ports:
+      - "${SERVER_PORT}:8080"         #(내 컴퓨터:컨테이너 내부)
+    environment:            # 환경변수 docker-docker.yml에서 사용 가능
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD} #db 비밀번호
+      SERVER_PORT: ${SERVER_PORT}
+    depends_on:             # db가 먼저 실행되어야 app이 실행됨
+      - db
+
+  db: #컨테이너 이름 db
+    image: mysql:8.0        #공식 mysql:8.0 이미지를 다운받아 컨테이너에서 바로 띄움
+    container_name: vote-mysql   #컨테이너 이름
+    ports:
+      - "${MYSQL_HOST_PORT}:${MYSQL_CONTAINER_PORT}"        #(내 컴퓨터:컨테이너 내부) 내 컴퓨터의 3307은 로컬 mysql이 이용 중
+    environment:            #db 컨테이너가 사용하는 환경변수
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} #db 비밀번호 설정
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:               #DB 데이터가 컨테이너 재시작/삭제되어도 날아가지 않게 호스트 pc에 저장
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
+
+#환경변수 흐름
+#.env → docker-compose.yml →  application-docker.yaml
