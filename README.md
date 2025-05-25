@@ -33,8 +33,19 @@
 ## 배포 및 CICD
 
 ### 수동 배포 (필수)
-- 배포 방식 (예: EC2 + Docker, Vercel 등):
-- 배포 주소(URL):
+- 배포 방식 (예: EC2 + Docker, Vercel 등): 
+#### EC2 + Doker
+    - 로컬에서 build하여 jar 생성 후 도커 이미지 파일 생성
+    - Docker Hub 레퍼지토리에 전송
+    - EC2에서 Docker hub 접속 후 이미지 받아오기
+    - docker-compose, env 파일 작성 후 실행
+#### 도메인 연결
+    - 가비아에서 도메인 구매 후 DNS 설정
+    - EC2에서 해당 도메인으로 인증서 발급
+    - Nginx를 통해 해당 도메인으로 들어오는 요청 설정, http -> https로 리다이렉트 설정
+    
+- 
+- 배포 주소(URL): https://hanihome-vote.shop
 
 ###  CICD
 - 진행중!
