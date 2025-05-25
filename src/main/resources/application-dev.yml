@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: {DB_URL}
+    username: {DB_USERNAME}
+    password: {DB_PW}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        default_batch_fetch_size: 100
+    show-sql: true
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}  # Spring이 redis와 TCP연결을 위한 포트
+
+jwt:
+  secret: ${JWT_SECRET_KEY} # secret key는 base64로 인코딩해놨음
+  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}   # 1분(ms 단위)
+  refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}  # 1일 (ms 단위)
