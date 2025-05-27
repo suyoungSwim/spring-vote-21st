@@ -42,7 +42,7 @@ public class SecurityConfig {
                                         "/api/v1/users/signin",
                                         "/api/v1/users/signup",
                                         "/api/v1/users/logout",
-                                        "/health"
+                                        "api/v1/health"
                                 ).permitAll()   // 인증 불필요
                                 .requestMatchers("/api/v1/admin/**").hasRole(Role.ROLE_ADMIN.getKey())
                                 .anyRequest().hasRole(Role.ROLE_USER.getKey())
