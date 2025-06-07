@@ -16,8 +16,14 @@ services:                   #컨테이너들 정의. 여기선 app(server)와 db
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD} #db 비밀번호
       SERVER_PORT: ${SERVER_PORT}
+      REDIS_HOST: ${REDIS_HOST}             # redis 컨테이너 이름을 host로 사용 (Docker 네트워크상에서 가능)
+      REDIS_PORT: ${REDIS_PORT}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ACCESS_TOKEN_EXPIRATION: ${JWT_ACCESS_TOKEN_EXPIRATION}
+      JWT_REFRESH_TOKEN_EXPIRATION: ${JWT_REFRESH_TOKEN_EXPIRATION}
     depends_on:             # db가 먼저 실행되어야 app이 실행됨
       - db
+      - redis
 
   db: #컨테이너 이름 db
     image: mysql:8.0        #공식 mysql:8.0 이미지를 다운받아 컨테이너에서 바로 띄움
@@ -31,8 +37,19 @@ services:                   #컨테이너들 정의. 여기선 app(server)와 db
     volumes:               #DB 데이터가 컨테이너 재시작/삭제되어도 날아가지 않게 호스트 pc에 저장
       - mysql_data:/var/lib/mysql
 
+  redis:
+    image: redis:7.2-alpine             # 공식 경량 이미지 추천
+    container_name: vote-redis
+    ports:
+      - "${REDIS_HOST_PORT}:${REDIS_PORT}"                     # 필요에 따라 외부 노출 (보통은 내부 연결만 해도 충분)
+    volumes:
+    - redis_data:/data                # Redis 데이터 영속화 (optional)
+    restart: unless-stopped
+
+
 volumes:
   mysql_data:
+  redis_data:
 
 #환경변수 흐름
 #.env → docker-compose.yml →  application-docker.yaml
