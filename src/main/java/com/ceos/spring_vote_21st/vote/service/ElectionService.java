@@ -1,8 +1,7 @@
 package com.ceos.spring_vote_21st.vote.service;
 
-import com.ceos.spring_vote_21st.global.error.CustomException;
-import com.ceos.spring_vote_21st.global.error.ErrorCode;
-import com.ceos.spring_vote_21st.member.domain.Member;
+import com.ceos.spring_vote_21st.global.exception.CustomException;
+import com.ceos.spring_vote_21st.global.response.domain.ServiceCode;
 import com.ceos.spring_vote_21st.member.repository.MemberRepository;
 import com.ceos.spring_vote_21st.vote.domain.*;
 import com.ceos.spring_vote_21st.vote.repository.ElectionRepository;
@@ -12,9 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +49,7 @@ public class ElectionService {
     public ElectionResponseDTO getElection(Long id) {
         return electionRepository.findById(id)
                 .map(ElectionResponseDTO::from)
-                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_EXISTS));
+                .orElseThrow(() -> new CustomException(ServiceCode.ENTITY_NOT_EXISTS));
     }
 
     /**
@@ -104,7 +100,7 @@ public class ElectionService {
     @Transactional
     public void deleteElection(Long id) {
         if (!electionRepository.existsById(id)) {
-            throw new CustomException(ErrorCode.ENTITY_NOT_EXISTS);
+            throw new CustomException(ServiceCode.INVALID_TOKEN.ENTITY_NOT_EXISTS);
         }
         electionRepository.deleteById(id);
     }
@@ -119,7 +115,7 @@ public class ElectionService {
     public Long addCandidate(CandidateCreateRequestDTO dto) {
         //find election
         Election findElection = electionRepository.findById(dto.getElectionId())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_EXISTS));
+                .orElseThrow(() -> new CustomException(ServiceCode.MEMBER_NOT_EXISTS));
 
         Candidate candidate = Candidate.create(findElection, dto.getName(),dto.getTeam());
 
@@ -133,7 +129,7 @@ public class ElectionService {
     //read
     public List<CandidateResponseDTO> getAllCandidatesByElection(Long electionId) {
         Election findElection = electionRepository.findById(electionId)
-                .orElseThrow(()->new CustomException(ErrorCode.ENTITY_NOT_EXISTS));
+                .orElseThrow(()->new CustomException(ServiceCode.ENTITY_NOT_EXISTS));
 
         return findElection.getCandidates().stream()
                 .map(CandidateResponseDTO::from)
@@ -142,7 +138,7 @@ public class ElectionService {
 
     public List<CandidateWithVoteResponseDTO> getAllCandidatesByElectionOrderByVoteCount(Long electionId) {
         Election findElection = electionRepository.findById(electionId)
-                .orElseThrow(()->new CustomException(ErrorCode.ENTITY_NOT_EXISTS));
+                .orElseThrow(()->new CustomException(ServiceCode.ENTITY_NOT_EXISTS));
 
         List<CandidateWithVoteResponseDTO> dtos = findElection.getCandidates().stream()
                 .map(candidate ->
@@ -161,7 +157,7 @@ public class ElectionService {
     public Long modifyCandidate(CandidateModifyRequestDTO dto) {
         //find election
         Election findElection = electionRepository.findById(dto.getElectionId())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_EXISTS));
+                .orElseThrow(() -> new CustomException(ServiceCode.MEMBER_NOT_EXISTS));
 
         List<Candidate> candidates = findElection.getCandidates();
 
@@ -169,7 +165,7 @@ public class ElectionService {
         Candidate findCandidate = candidates.stream()
                 .filter(candidate -> candidate.getId().equals(dto.getCandidateId()))
                 .findFirst()
-                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_EXISTS));
+                .orElseThrow(() -> new CustomException(ServiceCode.ENTITY_NOT_EXISTS));
 
         findCandidate.update(dto);
 

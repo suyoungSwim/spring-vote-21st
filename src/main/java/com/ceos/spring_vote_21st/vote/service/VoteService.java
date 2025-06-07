@@ -1,7 +1,7 @@
 package com.ceos.spring_vote_21st.vote.service;
 
-import com.ceos.spring_vote_21st.global.error.CustomException;
-import com.ceos.spring_vote_21st.global.error.ErrorCode;
+import com.ceos.spring_vote_21st.global.exception.CustomException;
+import com.ceos.spring_vote_21st.global.response.domain.ServiceCode;
 import com.ceos.spring_vote_21st.member.domain.CeosPosition;
 import com.ceos.spring_vote_21st.member.domain.Member;
 import com.ceos.spring_vote_21st.member.repository.MemberRepository;
@@ -28,34 +28,34 @@ public class VoteService {
     public Long voteToCandidate(VoteCreateRequestDTO dto) {
         //find
         Election findElection = electionRepository.findById(dto.getElectionId())
-                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_EXISTS));
+                .orElseThrow(() -> new CustomException(ServiceCode.ENTITY_NOT_EXISTS));
         Candidate findCandidate = findElection.getCandidates()
                 .stream()
                 .filter(candidate -> candidate.getId().equals(dto.getCandidateId()))
                 .findFirst()
-                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_EXISTS));
+                .orElseThrow(() -> new CustomException(ServiceCode.ENTITY_NOT_EXISTS));
         Member findMember = memberRepository.findById(dto.getMemberId())
-                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_EXISTS));
+                .orElseThrow(() -> new CustomException(ServiceCode.ENTITY_NOT_EXISTS));
 
 
         //create
         //1인 한번 투표
         if (voteRepository.existsByMemberAndElection(findMember, findElection))
-            throw new CustomException(ErrorCode.DUPLICATE_VOTE);
+            throw new CustomException(ServiceCode.DUPLICATE_VOTE);
 
 
         CeosPosition position = findMember.getPosition();
         if (findElection.getSection().equals(Section.FRONT_KING) && !position.equals(CeosPosition.FRONTEND)) {
             //SRS: 본인 파트에만 투표 가능
-            throw new CustomException(ErrorCode.POSITION_NOT_MATCH);
+            throw new CustomException(ServiceCode.POSITION_NOT_MATCH);
 
         } else if (findElection.getSection().equals(Section.BACK_KING) && !position.equals(CeosPosition.BACKEND)) {
-            throw new CustomException(ErrorCode.POSITION_NOT_MATCH);
+            throw new CustomException(ServiceCode.POSITION_NOT_MATCH);
             //SRS: 본인 파트에만 투표 가능
         } else if (findElection.getSection().equals(Section.DEMO_DAY)) {
             //SRS: 본인 팀은 투표 불가능
             if (findCandidate.getTeam().equals(findMember.getTeam()))
-                throw new CustomException(ErrorCode.CANNOT_VOTE_SAME_TEAM);
+                throw new CustomException(ServiceCode.CANNOT_VOTE_SAME_TEAM);
         }
 
         Vote vote = Vote.create(findMember, findCandidate, findElection);
