@@ -1,6 +1,5 @@
 package com.ceos.spring_vote_21st.member.web;
 
-import com.ceos.spring_vote_21st.member.web.dto.MemberCreateRequestDTO;
 import com.ceos.spring_vote_21st.member.web.dto.MemberResponseDTO;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,21 +18,22 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping
-    public ResponseEntity<Long> create(@RequestBody MemberCreateRequestDTO dto) {
-        return ResponseEntity.ok(memberService.createMember(dto));
-    }
-
+    /**
+     * read
+     * */
     @GetMapping("/{memberId}")
-    public ResponseEntity<MemberResponseDTO> findOne(@PathVariable Long memberId) {
-        return ResponseEntity.ok(memberService.getMember(memberId));
+    public MemberResponseDTO findOne(@PathVariable Long memberId) {
+        return memberService.getMember(memberId);
     }
 
     @GetMapping
-    public ResponseEntity<List<MemberResponseDTO>> findAll() {
-        return ResponseEntity.ok(memberService.getAllMembers());
+    public List<MemberResponseDTO> findAll() {
+        return memberService.getAllMembers();
     }
 
+    /**
+     * update
+     * */
 /*
     @PutMapping("/{id}")
     public ResponseEntity<MemberResponseDTO> update(@PathVariable Long id, @RequestBody MemberRequestDTO request) {
@@ -41,9 +41,17 @@ public class MemberController {
     }
 */
 
+    /**
+     * delete
+     * */
     @DeleteMapping("/{memberId}")
     public ResponseEntity<Void> delete(@PathVariable Long memberId) {
         memberService.deleteMember(memberId);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * other business
+     */
+
 }
