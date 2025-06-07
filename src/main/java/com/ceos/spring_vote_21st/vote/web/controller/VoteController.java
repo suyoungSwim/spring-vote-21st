@@ -1,7 +1,5 @@
 package com.ceos.spring_vote_21st.vote.web.controller;
 
-import com.ceos.spring_vote_21st.global.exception.CustomException;
-import com.ceos.spring_vote_21st.global.response.domain.ServiceCode;
 import com.ceos.spring_vote_21st.global.response.dto.CommonResponse;
 import com.ceos.spring_vote_21st.security.auth.user.detail.CustomUserDetails;
 import com.ceos.spring_vote_21st.vote.service.VoteService;
