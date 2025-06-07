@@ -1,7 +1,7 @@
 package com.ceos.spring_vote_21st.security.auth.application.filter;
 
-import com.ceos.spring_vote_21st.global.error.CustomException;
-import com.ceos.spring_vote_21st.global.error.ErrorCode;
+import com.ceos.spring_vote_21st.global.exception.CustomException;
+import com.ceos.spring_vote_21st.global.response.domain.ServiceCode;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.JwtTokenProvider;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.refresh.RefreshTokenService;
 import com.ceos.spring_vote_21st.security.auth.user.detail.CustomUserDetails;
@@ -74,7 +74,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             if (refreshCookie != null) {
                 refreshToken = refreshCookie.getValue();
                 // 1.refreshToken 서명 검증
-                if(!jwtTokenProvider.validateToken(refreshToken)) throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+                if(!jwtTokenProvider.validateToken(refreshToken)) throw new CustomException(ServiceCode.INVALID_REFRESH_TOKEN);
 
                 // 2. 본인 refresh token인지 검증
                 jwtTokenProvider.validateTokenOwnership(accessToken, refreshToken);

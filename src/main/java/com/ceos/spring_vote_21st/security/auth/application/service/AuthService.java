@@ -1,11 +1,10 @@
 package com.ceos.spring_vote_21st.security.auth.application.service;
 
-import com.ceos.spring_vote_21st.global.error.CustomException;
-import com.ceos.spring_vote_21st.global.error.ErrorCode;
+import com.ceos.spring_vote_21st.global.exception.CustomException;
+import com.ceos.spring_vote_21st.global.response.domain.ServiceCode;
 import com.ceos.spring_vote_21st.member.domain.Member;
 import com.ceos.spring_vote_21st.member.domain.Role;
 import com.ceos.spring_vote_21st.member.repository.MemberRepository;
-import com.ceos.spring_vote_21st.member.web.dto.MemberResponseDTO;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.JwtTokenProvider;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.blacklist.BlacklistTokenService;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.refresh.RefreshTokenService;
@@ -15,9 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -37,7 +33,7 @@ public class AuthService {
         // id  중복 체크
         String username = dto.getUsername();
         if (!memberRepository.findByUsername(username).isEmpty()) {
-            throw new CustomException(ErrorCode.USERNAME_ALREADY_EXISTS);
+            throw new CustomException(ServiceCode.INVALID_TOKEN.USERNAME_ALREADY_EXISTS);
         }
 
         Member entity = Member.builder()
