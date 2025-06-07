@@ -103,7 +103,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String requestURI = request.getRequestURI();
 
-        return requestURI.startsWith("/api/v1/users/signup") || requestURI.equals("/api/v1/users/signin") || requestURI.equals("/api/v1/users/logout") || requestURI.equals("/api/v1/health");
+        return requestURI.startsWith("/api/v1/users/signup") || requestURI.equals("/api/v1/users/signin") || requestURI.equals("/api/v1/users/logout") || requestURI.equals("/health");
     }
 
 }
