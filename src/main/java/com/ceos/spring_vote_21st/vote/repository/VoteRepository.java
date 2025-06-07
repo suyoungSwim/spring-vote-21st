@@ -10,12 +10,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface VoteRepository extends JpaRepository<Vote, Long> {
     List<Vote> findAllByCandidateAndElection(Candidate candidate, Election election);
 
 
     boolean existsByMemberAndElection(Member member, Election election);
+
+    Optional<Vote> findByElectionIdAndMemberId(Long electionId, Long memberId);
 
 
     @Query("select new com.ceos.spring_vote_21st.vote.web.dto.response.VoteCount4CandidateDTO(c.election.id, c.name, c.id, COUNT(v)) " +
