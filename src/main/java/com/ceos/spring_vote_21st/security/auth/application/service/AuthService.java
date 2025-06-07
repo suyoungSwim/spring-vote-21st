@@ -32,8 +32,13 @@ public class AuthService {
     public Long signUp(SignUpDTO dto) {
         // id  중복 체크
         String username = dto.getUsername();
-        if (!memberRepository.findByUsername(username).isEmpty()) {
-            throw new CustomException(ServiceCode.INVALID_TOKEN.USERNAME_ALREADY_EXISTS);
+        if (isUsernameExists(username)) {
+            throw new CustomException(ServiceCode.USERNAME_ALREADY_EXISTS);
+        }
+
+        // email 중복 체크
+        if (isEmailExists(dto.getEmail())) {
+            throw new CustomException(ServiceCode.EMAIL_ALREADY_EXISTS);
         }
 
         Member entity = Member.builder()
@@ -48,6 +53,16 @@ public class AuthService {
 
         return memberRepository.save(entity).getId();
     }
+
+    public boolean isEmailExists(String email) {
+        return memberRepository.existsByEmail(email);
+    }
+
+    public boolean isUsernameExists(String username) {
+        return memberRepository.findByUsername(username).isPresent();
+    }
+
+
 
 /*
     public String signIn(SignInDTO dto) {
