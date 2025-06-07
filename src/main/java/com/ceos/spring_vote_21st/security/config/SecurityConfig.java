@@ -1,5 +1,6 @@
 package com.ceos.spring_vote_21st.security.config;
 
+import com.ceos.spring_vote_21st.global.config.CorsConfig;
 import com.ceos.spring_vote_21st.member.domain.Role;
 import com.ceos.spring_vote_21st.security.auth.application.filter.CustomAuthenticationFilter;
 import com.ceos.spring_vote_21st.security.auth.application.filter.JwtAuthorizationFilter;
@@ -13,13 +14,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
-
+@EnableWebSecurity
 @RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
@@ -28,6 +31,8 @@ public class SecurityConfig {
     private final JwtAuthenticationSuccessHandler jwtSuccessHandler;
     private final JwtAuthenticationFailureHandler jwtFailureHandler;
     private final RefreshTokenService refreshTokenService;
+    private final CorsConfig corsConfig;
+/*
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationConfiguration authConfig) throws Exception {
@@ -38,7 +43,13 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.
                         sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize.
-                                requestMatchers("/api/v1/users/signin", "/api/v1/users/signup", "/api/v1/users/logout","/health").permitAll()   // 인증 불필요
+                                requestMatchers(
+                                        "/api/v1/users/signin",
+                                        "/api/v1/users/signup",
+                                        "/api/v1/users/logout",
+                                        "/health",
+                                        "/api/v1/users/signup/**"
+                                ).permitAll()   // 인증 불필요
                                 .requestMatchers("/api/v1/admin/**").hasRole(Role.ROLE_ADMIN.getKey())
                                 .anyRequest().hasRole(Role.ROLE_USER.getKey())
 //                        .anyRequest().authenticated()
@@ -52,10 +63,32 @@ public class SecurityConfig {
 
         return http.build();
     }
+*/
+@Bean
+public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationConfiguration authConfig) throws Exception {
+    http
+            .cors(cors->cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
+            .httpBasic(httpBasic -> httpBasic.disable())
+            .formLogin(formLogin -> formLogin.disable())
+            .sessionManagement(session -> session.
+                    sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(authorize -> authorize.
+                            requestMatchers("/**").permitAll()   // 인증 불필요
 
+            )
+            .addFilterBefore(
+                    new JwtAuthorizationFilter(jwtTokenProvider, userDetailsService, refreshTokenService),  // JWT 인가 필터 추가
+                    UsernamePasswordAuthenticationFilter.class
+            )
+            .addFilterAt(customAuthenticationFilter(authConfig.getAuthenticationManager()), UsernamePasswordAuthenticationFilter.class)  // 자체 인증 필터 추가
+    ;
+
+    return http.build();
+}
     private CustomAuthenticationFilter customAuthenticationFilter(AuthenticationManager authenticationManager) {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager, jwtSuccessHandler, jwtFailureHandler);
-        customAuthenticationFilter.setFilterProcessesUrl("/api/v1/users/signin");
+        customAuthenticationFilter.setFilterProcessesUrl("/api/v1/auth/signin");
 
         return customAuthenticationFilter;
     }
@@ -70,5 +103,10 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
+    }
+
+    // CorsConfig
+    private CorsConfigurationSource corsConfigurationSource() {
+        return corsConfig.corsConfigurationSource();
     }
 }
