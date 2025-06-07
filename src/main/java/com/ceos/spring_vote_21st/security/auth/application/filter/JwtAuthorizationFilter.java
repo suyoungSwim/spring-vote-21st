@@ -44,6 +44,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         // 헤더 Authorization 필드에서 토큰 추출
         String accessToken = getTokenFromRequest(request);
 
+        // 인증없이도 조회가능한 URI를 위해서 토큰 없이도 다음 필터로 넘긴다.
+        if (accessToken == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         // token 검증 (+ access token 재발행)
         validateAndReissue(request, response, accessToken);
 
@@ -103,7 +108,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String requestURI = request.getRequestURI();
 
-        return requestURI.startsWith("/api/v1/users/signup") || requestURI.equals("/api/v1/users/signin") || requestURI.equals("/api/v1/users/logout") || requestURI.equals("/health");
+        return requestURI.startsWith("/api/v1/auth/signup") || requestURI.equals("/api/v1/auth/signin") || requestURI.equals("/api/v1/auth/logout") || requestURI.equals("/health");
     }
 
 }
