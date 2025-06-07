@@ -1,4 +1,4 @@
-package com.ceos.spring_vote_21st.vote.web.dto;
+package com.ceos.spring_vote_21st.vote.web.dto.response;
 
 import com.ceos.spring_vote_21st.vote.domain.Candidate;
 import lombok.*;

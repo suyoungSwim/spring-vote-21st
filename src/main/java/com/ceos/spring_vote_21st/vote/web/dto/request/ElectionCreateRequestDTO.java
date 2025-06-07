@@ -1,10 +1,9 @@
-package com.ceos.spring_vote_21st.vote.web.dto;
+package com.ceos.spring_vote_21st.vote.web.dto.request;
 
 // ElectionRequestDTO.java
 
-import com.ceos.spring_vote_21st.vote.domain.ElectionStatus;
-import com.ceos.spring_vote_21st.vote.domain.Section;
-import lombok.Builder;
+import com.ceos.spring_vote_21st.vote.domain.enums.ElectionStatus;
+import com.ceos.spring_vote_21st.vote.domain.enums.Section;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +19,10 @@ public class ElectionCreateRequestDTO {
     private ElectionStatus electionStatus;
 
     private Section section;
+
+    private LocalDateTime startedAt;
+
+    private LocalDateTime finishedAt;
 
     private List<CandidateCreateRequestDTO> candidates = new ArrayList<>();
 }

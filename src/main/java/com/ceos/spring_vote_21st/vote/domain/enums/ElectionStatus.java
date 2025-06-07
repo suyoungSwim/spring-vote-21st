@@ -1,4 +1,4 @@
-package com.ceos.spring_vote_21st.vote.domain;
+package com.ceos.spring_vote_21st.vote.domain.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

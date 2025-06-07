@@ -1,4 +1,4 @@
-package com.ceos.spring_vote_21st.vote.web.dto;
+package com.ceos.spring_vote_21st.vote.web.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
