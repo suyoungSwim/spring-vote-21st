@@ -12,6 +12,7 @@ WORKDIR /app
 #현재 디렉토리(소스코드 전체)를 컨테이너의 /app으로 복사.
 #도커파일 .과 ..은 각각 내 컴퓨터의 현재 디렉토리, 컨테이너의 현재 학업 디렉토리를 의미한다고 한다.
 COPY . .
+RUN head -20 src/main/java/com/ceos/spring_vote_21st/security/config/SecurityConfig.java
 
 #gradle로 프로젝트 빌드 => JAR 파일 생성
 RUN gradle clean build -x test

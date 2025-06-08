@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
+
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -37,6 +39,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationConfiguration authConfig) throws Exception {
         http
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .formLogin(formLogin -> formLogin.disable())
@@ -47,8 +50,10 @@ public class SecurityConfig {
                                         "/api/v1/users/signin",
                                         "/api/v1/users/signup",
                                         "/api/v1/users/logout",
+
                                         "/health",
                                         "/api/v1/users/signup/**"
+
                                 ).permitAll()   // 인증 불필요
                                 .requestMatchers("/api/v1/admin/**").hasRole(Role.ROLE_ADMIN.getKey())
                                 .anyRequest().hasRole(Role.ROLE_USER.getKey())
@@ -105,8 +110,10 @@ public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationConfigur
         return configuration.getAuthenticationManager();
     }
 
+
     // CorsConfig
     private CorsConfigurationSource corsConfigurationSource() {
         return corsConfig.corsConfigurationSource();
+
     }
 }

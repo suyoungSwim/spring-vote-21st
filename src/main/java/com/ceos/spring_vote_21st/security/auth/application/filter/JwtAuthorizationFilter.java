@@ -39,6 +39,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
     private final RefreshTokenService refreshTokenService;
 
+
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 헤더 Authorization 필드에서 토큰 추출
@@ -108,7 +110,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String requestURI = request.getRequestURI();
 
+
         return requestURI.startsWith("/api/v1/auth/signup") || requestURI.equals("/api/v1/auth/signin") || requestURI.equals("/api/v1/auth/logout") || requestURI.equals("/health");
+
     }
 
 }
