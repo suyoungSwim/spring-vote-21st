@@ -1,9 +1,11 @@
 package com.ceos.spring_vote_21st.global.response.wrapper;
 
+import com.ceos.spring_vote_21st.global.exception.CustomException;
 import com.ceos.spring_vote_21st.global.response.domain.ServiceCode;
 import com.ceos.spring_vote_21st.global.response.dto.CommonResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
@@ -17,6 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 * 기능: 응답의 body만 wrapping함.
 * 그 외의 status, header를 건드는건 목적이 아님
 * */
+@Slf4j
 @Order(2)
 @RestControllerAdvice
 public class GlobalResponseWrapper implements ResponseBodyAdvice {
@@ -46,6 +49,10 @@ public class GlobalResponseWrapper implements ResponseBodyAdvice {
         if (serviceCode.equals(ServiceCode.SUCCESS)) {
             commonResponse = CommonResponse.success(body);
         } else {
+            if(body instanceof CustomException) log.error("service Code: {}", ((CustomException)body).getServiceCode().getMessage());
+            else {
+                log.error("CustomException 말고 다른 Exception 터짐: {}", body);
+            }
             commonResponse = CommonResponse.failure(body);   // 원래 Exception은 여기까지 안옴: 전역예외 핸들러에서 CommonResponse로 변환 되었어야했음.
         }
 

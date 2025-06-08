@@ -1,7 +1,7 @@
 package com.ceos.spring_vote_21st.vote.domain;
 
 import com.ceos.spring_vote_21st.member.domain.CeosTeam;
-import com.ceos.spring_vote_21st.vote.web.dto.CandidateModifyRequestDTO;
+import com.ceos.spring_vote_21st.vote.web.dto.request.CandidateModifyRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 

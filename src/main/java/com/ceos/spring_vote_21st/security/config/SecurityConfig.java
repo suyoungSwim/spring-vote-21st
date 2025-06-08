@@ -1,5 +1,6 @@
 package com.ceos.spring_vote_21st.security.config;
 
+import com.ceos.spring_vote_21st.global.config.CorsConfig;
 import com.ceos.spring_vote_21st.member.domain.Role;
 import com.ceos.spring_vote_21st.security.auth.application.filter.CustomAuthenticationFilter;
 import com.ceos.spring_vote_21st.security.auth.application.filter.JwtAuthorizationFilter;
@@ -14,18 +15,16 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
 
 
+@EnableWebSecurity
 @RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
@@ -34,6 +33,8 @@ public class SecurityConfig {
     private final JwtAuthenticationSuccessHandler jwtSuccessHandler;
     private final JwtAuthenticationFailureHandler jwtFailureHandler;
     private final RefreshTokenService refreshTokenService;
+    private final CorsConfig corsConfig;
+/*
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationConfiguration authConfig) throws Exception {
@@ -49,7 +50,10 @@ public class SecurityConfig {
                                         "/api/v1/users/signin",
                                         "/api/v1/users/signup",
                                         "/api/v1/users/logout",
-                                        "api/v1/health"
+
+                                        "/health",
+                                        "/api/v1/users/signup/**"
+
                                 ).permitAll()   // 인증 불필요
                                 .requestMatchers("/api/v1/admin/**").hasRole(Role.ROLE_ADMIN.getKey())
                                 .anyRequest().hasRole(Role.ROLE_USER.getKey())
@@ -64,10 +68,32 @@ public class SecurityConfig {
 
         return http.build();
     }
+*/
+@Bean
+public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationConfiguration authConfig) throws Exception {
+    http
+            .cors(cors->cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
+            .httpBasic(httpBasic -> httpBasic.disable())
+            .formLogin(formLogin -> formLogin.disable())
+            .sessionManagement(session -> session.
+                    sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(authorize -> authorize.
+                            requestMatchers("/**").permitAll()   // 인증 불필요
 
+            )
+            .addFilterBefore(
+                    new JwtAuthorizationFilter(jwtTokenProvider, userDetailsService, refreshTokenService),  // JWT 인가 필터 추가
+                    UsernamePasswordAuthenticationFilter.class
+            )
+            .addFilterAt(customAuthenticationFilter(authConfig.getAuthenticationManager()), UsernamePasswordAuthenticationFilter.class)  // 자체 인증 필터 추가
+    ;
+
+    return http.build();
+}
     private CustomAuthenticationFilter customAuthenticationFilter(AuthenticationManager authenticationManager) {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager, jwtSuccessHandler, jwtFailureHandler);
-        customAuthenticationFilter.setFilterProcessesUrl("/api/v1/users/signin");
+        customAuthenticationFilter.setFilterProcessesUrl("/api/v1/auth/signin");
 
         return customAuthenticationFilter;
     }
@@ -84,17 +110,10 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
-    //Cors 관련
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // 프론트 주소
-        configuration.setAllowedMethods(List.of("*"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+    // CorsConfig
+    private CorsConfigurationSource corsConfigurationSource() {
+        return corsConfig.corsConfigurationSource();
+
     }
 }

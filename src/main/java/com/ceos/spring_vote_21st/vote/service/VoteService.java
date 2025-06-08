@@ -7,14 +7,18 @@ import com.ceos.spring_vote_21st.member.domain.Member;
 import com.ceos.spring_vote_21st.member.repository.MemberRepository;
 import com.ceos.spring_vote_21st.vote.domain.Candidate;
 import com.ceos.spring_vote_21st.vote.domain.Election;
-import com.ceos.spring_vote_21st.vote.domain.Section;
+import com.ceos.spring_vote_21st.vote.domain.enums.Section;
 import com.ceos.spring_vote_21st.vote.domain.Vote;
 import com.ceos.spring_vote_21st.vote.repository.ElectionRepository;
 import com.ceos.spring_vote_21st.vote.repository.VoteRepository;
-import com.ceos.spring_vote_21st.vote.web.dto.VoteCreateRequestDTO;
+import com.ceos.spring_vote_21st.vote.web.dto.request.VoteCreateRequestDTO;
+import com.ceos.spring_vote_21st.vote.web.dto.response.CandidateResponseDTO;
+import com.ceos.spring_vote_21st.vote.web.dto.response.MyVoteDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -61,5 +65,22 @@ public class VoteService {
         Vote vote = Vote.create(findMember, findCandidate, findElection);
 
         return voteRepository.save(vote).getId();
+    }
+
+    public MyVoteDTO getMyVote(Long electionId, Long memberId) {
+        if (memberId == null) {
+            return MyVoteDTO.create(false, null);
+        }
+
+        Optional<Vote> optionalVote = voteRepository.findByElectionIdAndMemberId(electionId, memberId);
+
+        if (optionalVote.isPresent()) {
+            // 투표한 경우 → true + 후보자 정보 반환
+            Vote vote = optionalVote.get();
+            return MyVoteDTO.create(true, CandidateResponseDTO.from(vote.getCandidate()));
+        } else {
+            // 투표 안 한 경우
+            return MyVoteDTO.create(false, null);
+        }
     }
 }

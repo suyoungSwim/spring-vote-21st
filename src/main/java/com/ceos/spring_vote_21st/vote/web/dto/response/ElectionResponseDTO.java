@@ -1,9 +1,9 @@
-package com.ceos.spring_vote_21st.vote.web.dto;
+package com.ceos.spring_vote_21st.vote.web.dto.response;
 
 
 import com.ceos.spring_vote_21st.vote.domain.Election;
-import com.ceos.spring_vote_21st.vote.domain.ElectionStatus;
-import com.ceos.spring_vote_21st.vote.domain.Section;
+import com.ceos.spring_vote_21st.vote.domain.enums.ElectionStatus;
+import com.ceos.spring_vote_21st.vote.domain.enums.Section;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -19,7 +19,6 @@ public class ElectionResponseDTO {
     private ElectionStatus electionStatus;
     private LocalDateTime startedAt;
     private LocalDateTime finishedAt;
-    private List<CandidateResponseDTO> candidates;
     private Section section;
 
     public static ElectionResponseDTO from(Election e) {
@@ -29,13 +28,6 @@ public class ElectionResponseDTO {
                 .electionStatus(e.getElectionStatus())
                 .startedAt(e.getStartedAt())
                 .finishedAt(e.getFinishedAt())
-                .candidates(e.getCandidates().stream()
-                        .map(c -> CandidateResponseDTO.builder()
-                                .electionId(e.getId())
-                                .name(c.getName())
-                                .id(c.getId())
-                                .build())
-                        .collect(Collectors.toList()))
                 .section(e.getSection())
                 .build();
     }

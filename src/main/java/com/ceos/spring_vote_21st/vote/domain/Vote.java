@@ -2,11 +2,8 @@ package com.ceos.spring_vote_21st.vote.domain;
 
 import com.ceos.spring_vote_21st.global.domain.BaseEntity;
 import com.ceos.spring_vote_21st.member.domain.Member;
-import com.ceos.spring_vote_21st.vote.web.dto.VoteCreateRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
-
-import javax.annotation.processing.Generated;
 
 import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
@@ -22,10 +19,10 @@ public class Vote extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = LAZY) @JoinColumn(name = "member_id")
-    private Member member;
+    private Member member;  // 유권자
 
     @ManyToOne(fetch = LAZY) @JoinColumn(name = "candidate_id")
-    private Candidate candidate;
+    private Candidate candidate;    //후보자
 
     @ManyToOne(fetch = LAZY) @JoinColumn(name = "election_id")
     private Election election;

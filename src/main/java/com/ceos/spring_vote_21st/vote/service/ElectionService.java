@@ -6,14 +6,20 @@ import com.ceos.spring_vote_21st.member.repository.MemberRepository;
 import com.ceos.spring_vote_21st.vote.domain.*;
 import com.ceos.spring_vote_21st.vote.repository.ElectionRepository;
 import com.ceos.spring_vote_21st.vote.repository.VoteRepository;
-import com.ceos.spring_vote_21st.vote.web.dto.*;
+import com.ceos.spring_vote_21st.vote.web.dto.request.CandidateAddRequestDTO;
+import com.ceos.spring_vote_21st.vote.web.dto.request.CandidateCreateRequestDTO;
+import com.ceos.spring_vote_21st.vote.web.dto.request.CandidateModifyRequestDTO;
+import com.ceos.spring_vote_21st.vote.web.dto.request.ElectionCreateRequestDTO;
+import com.ceos.spring_vote_21st.vote.web.dto.response.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -31,12 +37,16 @@ public class ElectionService {
         Election election = Election.builder()
                 .name(dto.getName())
                 .electionStatus(dto.getElectionStatus())
+                .section(dto.getSection())
+                .startedAt(dto.getStartedAt())
+                .finishedAt(dto.getFinishedAt())
                 .build();
 
+        log.info("candidatesDTO 로깅: "+ dto.getCandidates().toString());
         // cascade = ALL 이므로, Election에 붙여 두면 save() 시 함께 persist 됩니다.
         dto.getCandidates().forEach(candidateDTO -> {
             Candidate c = Candidate.create(election, candidateDTO.getName(), candidateDTO.getTeam());
-            election.getCandidates().add(c);
+            election.addCandidate(c);
         });
 
 
@@ -112,7 +122,7 @@ public class ElectionService {
 
     //create
     @Transactional
-    public Long addCandidate(CandidateCreateRequestDTO dto) {
+    public Long addCandidate(CandidateAddRequestDTO dto) {
         //find election
         Election findElection = electionRepository.findById(dto.getElectionId())
                 .orElseThrow(() -> new CustomException(ServiceCode.MEMBER_NOT_EXISTS));
@@ -143,6 +153,7 @@ public class ElectionService {
         List<CandidateWithVoteResponseDTO> dtos = findElection.getCandidates().stream()
                 .map(candidate ->
                 {
+                    // TODO: 어차피 후보자별 투표 수를 보여주는게 목표니까 VoteRepository에서도 조회 가능
                     int voteCount = voteRepository.findAllByCandidateAndElection(candidate, findElection).size();
                     return CandidateWithVoteResponseDTO.from(candidate, voteCount);
                 })
@@ -162,10 +173,7 @@ public class ElectionService {
         List<Candidate> candidates = findElection.getCandidates();
 
         //find candidate
-        Candidate findCandidate = candidates.stream()
-                .filter(candidate -> candidate.getId().equals(dto.getCandidateId()))
-                .findFirst()
-                .orElseThrow(() -> new CustomException(ServiceCode.ENTITY_NOT_EXISTS));
+        Candidate findCandidate = getCandidateById(dto.getCandidateId(), candidates);
 
         findCandidate.update(dto);
 
@@ -173,6 +181,39 @@ public class ElectionService {
         return findCandidate.getId();
     }
 
+    @Transactional
+    public void deleteCandidate(Long electionId, Long candidateId) {
+        Election findElection = electionRepository.findById(electionId)
+                .orElseThrow(() -> new CustomException(ServiceCode.ENTITY_NOT_EXISTS));
+
+        Candidate findCandidate = findElection.getCandidates()
+                .stream()
+                .filter(candidate -> candidate.getId().equals(candidateId))
+                .findFirst()
+                .orElseThrow(() -> new CustomException(ServiceCode.ENTITY_NOT_EXISTS));
+
+        findElection.removeCandidate(findCandidate);
+    }
+
+    /**
+     * other business
+     * */
+    private static Candidate getCandidateById(Long candidateId, List<Candidate> candidates) {
+        Candidate findCandidate = candidates.stream()
+                .filter(candidate -> candidate.getId().equals(candidateId))
+                .findFirst()
+                .orElseThrow(() -> new CustomException(ServiceCode.ENTITY_NOT_EXISTS));
+        return findCandidate;
+    }
 
 
+    // 선겨별 투표 결과 조회
+    public ElectionResultDTO getElectionResult(Long electionId) {
+        Election findElection = electionRepository.findById(electionId)
+                .orElseThrow(() -> new CustomException(ServiceCode.ENTITY_NOT_EXISTS));
+
+        List<VoteCount4CandidateDTO> voteCounts = voteRepository.findVoteCountsByElection(electionId);
+
+        return ElectionResultDTO.from(ElectionResponseDTO.from(findElection), voteCounts);
+    }
 }
