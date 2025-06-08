@@ -1,5 +1,6 @@
 package com.ceos.spring_vote_21st.vote.domain;
 
+import com.ceos.spring_vote_21st.global.domain.BaseEntity;
 import com.ceos.spring_vote_21st.member.domain.Member;
 import com.ceos.spring_vote_21st.vote.web.dto.VoteCreateRequestDTO;
 import jakarta.persistence.*;
@@ -16,7 +17,7 @@ import static lombok.AccessLevel.PROTECTED;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Vote {
+public class Vote extends BaseEntity {
     @Id @GeneratedValue
     private Long id;
 

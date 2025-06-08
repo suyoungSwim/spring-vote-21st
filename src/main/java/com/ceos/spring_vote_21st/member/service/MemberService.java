@@ -1,12 +1,11 @@
 package com.ceos.spring_vote_21st.member.service;
 
-import com.ceos.spring_vote_21st.global.error.CustomException;
-import com.ceos.spring_vote_21st.global.error.ErrorCode;
+import com.ceos.spring_vote_21st.global.exception.CustomException;
+import com.ceos.spring_vote_21st.global.response.domain.ServiceCode;
 import com.ceos.spring_vote_21st.member.domain.Member;
 import com.ceos.spring_vote_21st.member.repository.MemberRepository;
 import com.ceos.spring_vote_21st.member.web.dto.MemberCreateRequestDTO;
 import com.ceos.spring_vote_21st.member.web.dto.MemberResponseDTO;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,10 +27,10 @@ public class MemberService {
     public Long createMember(MemberCreateRequestDTO dto) {
         Member entity = dto.toEntity();
         if (memberRepository.existsByUsername(entity.getUsername())) {
-            throw new CustomException(ErrorCode.USERNAME_ALREADY_EXISTS);
+            throw new CustomException(ServiceCode.USERNAME_ALREADY_EXISTS);
         }
         if (memberRepository.existsByEmail(entity.getEmail())) {
-            throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
+            throw new CustomException(ServiceCode.EMAIL_ALREADY_EXISTS);
         }
         return memberRepository.save(entity).getId();
     }
@@ -39,7 +38,7 @@ public class MemberService {
     /** READ (단건 조회) */
     public MemberResponseDTO getMember(Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_EXISTS));
+                .orElseThrow(() -> new CustomException(ServiceCode.MEMBER_NOT_EXISTS));
 
         return MemberResponseDTO.from(member);
     }
@@ -79,7 +78,7 @@ public class MemberService {
     @Transactional
     public void deleteMember(Long id) {
         if (!memberRepository.existsById(id)) {
-            throw new CustomException(ErrorCode.MEMBER_NOT_EXISTS);
+            throw new CustomException(ServiceCode.MEMBER_NOT_EXISTS);
         }
         memberRepository.deleteById(id);
     }
