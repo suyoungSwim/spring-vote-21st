@@ -51,6 +51,9 @@ public class SecurityConfig {
                                         "/api/v1/auth/signin",
                                         "/api/v1/auth/logout",
                                         "/api/v1/auth/tokens/refresh",
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html",
+                                        "/v3/api-docs/**",
                                         "/health"
 
                                 ).permitAll()   // 인증 불필요
