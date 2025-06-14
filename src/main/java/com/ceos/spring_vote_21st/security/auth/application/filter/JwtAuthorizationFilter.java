@@ -111,7 +111,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
 
 
-        return requestURI.startsWith("/api/v1/auth/signup") || requestURI.equals("/api/v1/auth/signin") || requestURI.equals("/api/v1/auth/logout") || requestURI.equals("/health");
+        return requestURI.startsWith(
+                "/api/v1/auth/signup") ||
+                requestURI.equals("/api/v1/auth/signin")
+                || requestURI.equals("/api/v1/auth/logout")
+                || requestURI.equals("/health")
+                || requestURI.equals("/swagger-ui.html")
+                || requestURI.startsWith("/swagger-ui")
+                || requestURI.startsWith("/v3/api-docs")
+                ;
 
     }
 
