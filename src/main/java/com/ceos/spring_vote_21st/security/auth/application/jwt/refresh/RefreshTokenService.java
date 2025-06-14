@@ -1,11 +1,8 @@
 package com.ceos.spring_vote_21st.security.auth.application.jwt.refresh;
 
-import com.ceos.spring_vote_21st.global.exception.CustomException;
-import com.ceos.spring_vote_21st.global.response.domain.ServiceCode;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.JwtProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
