@@ -1,32 +1,34 @@
 package com.ceos.spring_vote_21st.security.auth.web.controller;
 
+import com.ceos.spring_vote_21st.global.exception.CustomException;
+import com.ceos.spring_vote_21st.global.response.domain.ServiceCode;
 import com.ceos.spring_vote_21st.global.response.dto.CommonResponse;
 import com.ceos.spring_vote_21st.member.service.MemberService;
 import com.ceos.spring_vote_21st.member.web.dto.MemberResponseDTO;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.JwtTokenProvider;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.refresh.RefreshTokenService;
 import com.ceos.spring_vote_21st.security.auth.application.service.AuthService;
+import com.ceos.spring_vote_21st.security.auth.application.service.TokenReissueService;
 import com.ceos.spring_vote_21st.security.auth.web.dto.SignUpDTO;
 import io.netty.handler.ssl.PemPrivateKey;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.WebUtils;
 
 import java.util.Map;
 
-/**
- * 경로가 원래는 /api/v1/auth/**가 맞으나 기존 프론트팀의 코드수정 최소화를 위해 해당프로젝트에서만 /auth => /users 사용
- *
- */
+
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 @RestController
 public class AuthController {
     private final AuthService authService;
-    private final RefreshTokenService refreshTokenService;
-    private final JwtTokenProvider tokenProvider;
+    private final TokenReissueService tokenReissueService;
 
     // 회원가입
     @PostMapping("/signup")
@@ -47,6 +49,16 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    // 액세스 토큰 재발급
+    @PostMapping("/tokens/refresh")
+    public ResponseEntity<CommonResponse<?>> reissueAccessToken(@CookieValue("refreshToken") String refreshToken) {
+        String reissueAccessToken = tokenReissueService.reissueAccessToken(refreshToken);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + reissueAccessToken)
+                .body(CommonResponse.success(null));
+    }
+
     // 아이디 중복 확인
     @GetMapping("/signup/username/exists")
     public ResponseEntity<CommonResponse<?>> isDuplicateUsername(@RequestParam String username) {
@@ -62,4 +74,5 @@ public class AuthController {
 
         return ResponseEntity.ok(CommonResponse.success(Map.of("exists", exists)));
     }
+
 }

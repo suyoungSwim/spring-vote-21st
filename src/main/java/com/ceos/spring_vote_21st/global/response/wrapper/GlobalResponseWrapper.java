@@ -49,11 +49,16 @@ public class GlobalResponseWrapper implements ResponseBodyAdvice {
         if (serviceCode.equals(ServiceCode.SUCCESS)) {
             commonResponse = CommonResponse.success(body);
         } else {
-            if(body instanceof CustomException) log.error("service Code: {}", ((CustomException)body).getServiceCode().getMessage());
+            // 원래 Exception은 여기까지 안옴: 전역예외 핸들러에서 CommonResponse로 변환 되었어야했음.
+            if(body instanceof CustomException){
+                log.error("service Code: {}", ((CustomException) body).getServiceCode().getMessage());
+                commonResponse = CommonResponse.failure(body, ((CustomException) body).getServiceCode());
+            }
+
             else {
                 log.error("CustomException 말고 다른 Exception 터짐: {}", body);
+                commonResponse = CommonResponse.failure(body);
             }
-            commonResponse = CommonResponse.failure(body);   // 원래 Exception은 여기까지 안옴: 전역예외 핸들러에서 CommonResponse로 변환 되었어야했음.
         }
 
 
