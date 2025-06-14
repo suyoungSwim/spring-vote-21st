@@ -29,11 +29,12 @@ public class JwtAuthenticationSuccessHandler
         String accessToken = tokenProvider.generateAccessToken(userDetails.getUserId(), userDetails.getUsername());
         String refreshToken = tokenProvider.generateRefreshToken(userDetails.getUserId(), userDetails.getUsername());
 
-        refreshService.saveToken(userDetails.getUserId(), refreshToken);
 
         // accessToken 헤더 담기
         response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer "+accessToken);
 
+        //refreshToken 서버 저장
+        refreshService.saveToken(userDetails.getUserId(), refreshToken);
         //refershToken 쿠키 담기
         long cookieAge = tokenProvider.getJwtProperties().getRefreshTokenExpiration() / 1000;   // 초 단위
         String refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
