@@ -34,7 +34,6 @@ public class SecurityConfig {
     private final JwtAuthenticationFailureHandler jwtFailureHandler;
     private final RefreshTokenService refreshTokenService;
     private final CorsConfig corsConfig;
-/*
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationConfiguration authConfig) throws Exception {
@@ -47,12 +46,12 @@ public class SecurityConfig {
                         sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize.
                                 requestMatchers(
-                                        "/api/v1/users/signin",
-                                        "/api/v1/users/signup",
-                                        "/api/v1/users/logout",
-
-                                        "/health",
-                                        "/api/v1/users/signup/**"
+                                        "/api/v1/auth/signup",
+                                        "/api/v1/users/signup/**",
+                                        "/api/v1/auth/signin",
+                                        "/api/v1/auth/logout",
+                                        "/api/v1/auth/tokens/refresh",
+                                        "/health"
 
                                 ).permitAll()   // 인증 불필요
                                 .requestMatchers("/api/v1/admin/**").hasRole(Role.ROLE_ADMIN.getKey())
@@ -68,7 +67,7 @@ public class SecurityConfig {
 
         return http.build();
     }
-*/
+/*
 @Bean
 public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationConfiguration authConfig) throws Exception {
     http
@@ -91,6 +90,8 @@ public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationConfigur
 
     return http.build();
 }
+*/
+
     private CustomAuthenticationFilter customAuthenticationFilter(AuthenticationManager authenticationManager) {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager, jwtSuccessHandler, jwtFailureHandler);
         customAuthenticationFilter.setFilterProcessesUrl("/api/v1/auth/signin");
