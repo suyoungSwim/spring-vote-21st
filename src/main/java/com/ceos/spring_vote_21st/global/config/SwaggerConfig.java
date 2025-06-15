@@ -10,6 +10,26 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI openAPI() {
+        // /login 경로에 대한 설명 추가
+        Schema<?> loginSchema = new ObjectSchema()
+                .addProperty("username", new StringSchema().example("string"))
+                .addProperty("password", new StringSchema().example("string"));
+
+        RequestBody loginRequestBody = new RequestBody()
+                .required(true)
+                .content(new Content().addMediaType("application/json",
+                        new MediaType().schema(loginSchema)));
+
+        Operation loginOperation = new Operation()
+                .summary("로그인 (Spring Security 필터 사용)")
+                .addTagsItem("auth-controller")
+                .requestBody(loginRequestBody)
+                .responses(new ApiResponses()
+                        .addApiResponse("201", new ApiResponse().description("로그인 성공 - JWT 반환"))
+                        .addApiResponse("401", new ApiResponse().description("인증 실패")));
+
+        PathItem loginPathItem = new PathItem().post(loginOperation);
+
         return new OpenAPI()
                 .info(new Info().title("API 문서").version("v1"))
                 .addSecurityItem(new SecurityRequirement().addList("AccessToken( Bearer없이 토큰만 넣어주세요:) )"))
