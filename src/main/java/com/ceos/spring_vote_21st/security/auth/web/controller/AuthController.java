@@ -11,6 +11,7 @@ import com.ceos.spring_vote_21st.security.auth.application.service.AuthService;
 import com.ceos.spring_vote_21st.security.auth.application.service.TokenReissueService;
 import com.ceos.spring_vote_21st.security.auth.web.dto.SignUpDTO;
 import io.netty.handler.ssl.PemPrivateKey;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ import org.springframework.web.util.WebUtils;
 
 import java.util.Map;
 
-
+@Tag(name = "auth-controller")
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")

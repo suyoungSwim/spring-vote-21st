@@ -3,6 +3,7 @@ package com.ceos.spring_vote_21st.security.auth.application.filter;
 import com.ceos.spring_vote_21st.global.exception.CustomException;
 import com.ceos.spring_vote_21st.global.response.domain.ServiceCode;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.JwtTokenProvider;
+import com.ceos.spring_vote_21st.security.auth.application.jwt.blacklist.BlacklistTokenService;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.refresh.RefreshTokenService;
 import com.ceos.spring_vote_21st.security.auth.user.detail.CustomUserDetails;
 import jakarta.servlet.FilterChain;
@@ -38,6 +39,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
     private final RefreshTokenService refreshTokenService;
+    private final BlacklistTokenService blacklistTokenService;
 
 
 
@@ -73,6 +75,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
      * 토큰 검증 및 만료시 재발행
      * */
     private void validateAndReissue(HttpServletRequest request, HttpServletResponse response, String accessToken) {
+        // 블랙리스트 검증
+        if (blacklistTokenService.isBlacklisted(accessToken)) {
+            log.info("해당 토큰은 블랙리스트입니다, token: {}", accessToken);
+
+            throw new CustomException(ServiceCode.TOKEN_LOGOUT);
+        }
+        // 토큰 검증
         if (!jwtTokenProvider.validateToken(accessToken)) { // access 토큰이 만료된거면..
             log.info("Token Expired: 토큰 재발행 시작");
             Cookie refreshCookie = WebUtils.getCookie(request, "refreshToken");

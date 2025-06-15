@@ -31,8 +31,8 @@ public enum ServiceCode {
     UNSUPPORTED_TOKEN(HttpStatus.BAD_REQUEST, "미지원하는 토큰입니다"),
 
     // not defined
-    NOT_DEFINED_ERROR(HttpStatus.BAD_REQUEST, "정의 되지 않은 에러입니다")
-    ;
+    NOT_DEFINED_ERROR(HttpStatus.BAD_REQUEST, "정의 되지 않은 에러입니다"),
+    TOKEN_LOGOUT(HttpStatus.BAD_REQUEST, "로그아웃한 사용자입니다");
 
     private final HttpStatus httpStatus;
     private final String message;
