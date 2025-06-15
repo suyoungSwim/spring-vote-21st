@@ -44,21 +44,31 @@ public class SecurityConfig {
                 .formLogin(formLogin -> formLogin.disable())
                 .sessionManagement(session -> session.
                         sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize.
-                                requestMatchers(
+                .authorizeHttpRequests(authorize -> authorize
+                                .requestMatchers("/api/v1/elections/{electionId}/votes",
+                                        "/api/v1/elections/{electionId}/my-vote").hasRole(Role.ROLE_USER.getKey())
+                                .requestMatchers(
                                         "/api/v1/auth/signup",
                                         "/api/v1/auth/signup/**",
                                         "/api/v1/auth/signin",
                                         "/api/v1/auth/logout",
                                         "/api/v1/auth/tokens/refresh",
+                                        // swagger
                                         "/swagger-ui/**",
                                         "/swagger-ui.html",
                                         "/v3/api-docs/**",
-                                        "/health"
+                                        // health
+                                        "/health",
+                                        // admin
+                                        "/api/v1/admin/**",
+                                        // member
+                                        "/api/v1/members/**",
+                                        // election
+                                        "/api/v1/elections/**"
 
                                 ).permitAll()   // 인증 불필요
-                                .requestMatchers("/api/v1/admin/**").hasRole(Role.ROLE_ADMIN.getKey())
-                                .anyRequest().hasRole(Role.ROLE_USER.getKey())
+//                                .requestMatchers("/api/v1/admin/**").hasRole(Role.ROLE_ADMIN.getKey())
+//                                .anyRequest().hasRole(Role.ROLE_USER.getKey())
 //                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(

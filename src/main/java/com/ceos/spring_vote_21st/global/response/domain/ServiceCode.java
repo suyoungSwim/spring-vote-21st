@@ -19,7 +19,7 @@ public enum ServiceCode {
     USERNAME_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 존재하는 아이디입니다"),
     EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다"),
     MEMBER_NOT_EXISTS(HttpStatus.BAD_REQUEST, "해당 ID의 회원이 존재하지 않습니다."),
-    ENTITY_NOT_EXISTS(HttpStatus.BAD_REQUEST, "해당 선거가 없습니다."),
+    ENTITY_NOT_EXISTS(HttpStatus.BAD_REQUEST, "해당 엔티티가 없습니다."),
     POSITION_NOT_MATCH(HttpStatus.BAD_REQUEST, "자신과 다른 파트에 투표했습니다"),
     CANNOT_VOTE_SAME_TEAM(HttpStatus.BAD_REQUEST, "자신의 팀에 투표할 수 없습니다"),
     DUPLICATE_VOTE(HttpStatus.BAD_REQUEST, "중복투표할 수 없습니다"),
