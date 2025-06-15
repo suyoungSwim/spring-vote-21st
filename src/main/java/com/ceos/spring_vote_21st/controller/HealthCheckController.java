@@ -13,4 +13,8 @@ public class HealthCheckController {
     public String healthCheck() {
         return "OK";
     }
+    @GetMapping("/health/new")
+    public String healthCheckNew() {
+        return "OK2";
+    }
 }

@@ -59,6 +59,7 @@ public class SecurityConfig {
                                         "/v3/api-docs/**",
                                         // health
                                         "/health",
+                                        "/health/new",
                                         // admin
                                         "/api/v1/admin/**",
                                         // member
