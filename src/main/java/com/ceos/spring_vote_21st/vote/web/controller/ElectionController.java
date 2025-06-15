@@ -23,14 +23,7 @@ public class ElectionController {
 
     private final ElectionService electionService;
 
-    /**
-     * create
-     */
-    @PostMapping
-    public ResponseEntity<CommonResponse<Long>> createElection(@RequestBody ElectionCreateRequestDTO dto) {
-        Long id = electionService.createElection(dto);
-        return ResponseEntity.ok(CommonResponse.success(id));
-    }
+
 
     /**
      * read
@@ -48,26 +41,13 @@ public class ElectionController {
         return ResponseEntity.ok(CommonResponse.success(list));
     }
 
-    /**
-     * delete
-     */
-    @DeleteMapping("/{electionId}")
-    public ResponseEntity<CommonResponse<Void>> deleteElection(@PathVariable Long electionId) {
-        electionService.deleteElection(electionId);
-        return ResponseEntity.ok(CommonResponse.success(null));
-    }
+
 
     /**
      * // —— 후보(Candidate) 관련 —— //
      */
 
-    // 후보 추가
-    @PostMapping("/{electionId}/candidates")
-    public ResponseEntity<CommonResponse<Long>> addCandidate(
-            @RequestBody CandidateAddRequestDTO dto) {
-        Long id = electionService.addCandidate(dto);
-        return ResponseEntity.ok(CommonResponse.success(id));
-    }
+
 
     // 선거별 후보자 조회
     @GetMapping("/{electionId}/candidates")
@@ -86,21 +66,6 @@ public class ElectionController {
         return ResponseEntity.ok(CommonResponse.success(list));
     }
 
-    // 후보 정보 수정
-    @PutMapping("/{electionId}/candidates")
-    public ResponseEntity<CommonResponse<Long>> modifyCandidate(
-            @RequestBody CandidateModifyRequestDTO dto) {
-        Long id = electionService.modifyCandidate(dto);
-        return ResponseEntity.ok(CommonResponse.success(id));
-    }
-
-    // delete
-    @DeleteMapping("/{electionId}/candidates/{candidateId}")
-    public ResponseEntity<CommonResponse<?>> deleteCandidate(@PathVariable Long electionId, @PathVariable Long candidateId) {
-        electionService.deleteCandidate(electionId, candidateId);
-
-        return ResponseEntity.ok(CommonResponse.success(null));
-    }
 
     /**
      * other business
