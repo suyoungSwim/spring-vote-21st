@@ -46,7 +46,8 @@ public class SecurityConfig {
                         sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                                 .requestMatchers("/api/v1/elections/{electionId}/votes",
-                                        "/api/v1/elections/{electionId}/my-vote").hasRole(Role.ROLE_USER.getKey())
+                                        "/api/v1/elections/{electionId}/my-vote")
+                                .hasRole(Role.ROLE_USER.getKey())
                                 .requestMatchers(
                                         "/api/v1/auth/signup",
                                         "/api/v1/auth/signup/**",
@@ -54,8 +55,8 @@ public class SecurityConfig {
                                         "/api/v1/auth/logout",
                                         "/api/v1/auth/tokens/refresh",
                                         // swagger
-                                        "/swagger-ui/**",
                                         "/swagger-ui.html",
+                                        "/swagger-ui/**",
                                         "/v3/api-docs/**",
                                         // health
                                         "/health",
