@@ -82,4 +82,8 @@ public class MemberService {
         }
         memberRepository.deleteById(id);
     }
+    @Transactional
+    public void deleteAll() {
+        memberRepository.deleteAll();
+    }
 }

@@ -216,4 +216,8 @@ public class ElectionService {
 
         return ElectionResultDTO.from(ElectionResponseDTO.from(findElection), voteCounts);
     }
+
+    public void deleteAll() {
+        electionRepository.deleteAll();
+    }
 }
