@@ -5,6 +5,7 @@ import com.ceos.spring_vote_21st.member.domain.Role;
 import com.ceos.spring_vote_21st.security.auth.application.filter.CustomAuthenticationFilter;
 import com.ceos.spring_vote_21st.security.auth.application.filter.JwtAuthorizationFilter;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.JwtTokenProvider;
+import com.ceos.spring_vote_21st.security.auth.application.jwt.blacklist.BlacklistTokenService;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.refresh.RefreshTokenService;
 import com.ceos.spring_vote_21st.security.handler.JwtAuthenticationFailureHandler;
 import com.ceos.spring_vote_21st.security.handler.JwtAuthenticationSuccessHandler;
@@ -33,6 +34,7 @@ public class SecurityConfig {
     private final JwtAuthenticationSuccessHandler jwtSuccessHandler;
     private final JwtAuthenticationFailureHandler jwtFailureHandler;
     private final RefreshTokenService refreshTokenService;
+    private final BlacklistTokenService blacklistTokenService;
     private final CorsConfig corsConfig;
 
     @Bean
@@ -58,15 +60,16 @@ public class SecurityConfig {
                                         "/swagger-ui.html",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",
-                                        // health
-                                        "/health",
-                                        "/health/new",
                                         // admin
                                         "/api/v1/admin/**",
                                         // member
                                         "/api/v1/members/**",
                                         // election
-                                        "/api/v1/elections/**"
+                                        "/api/v1/elections/**",
+                                        // health
+                                        "/health",
+                                        "/health/new",
+                                        "/error"
 
                                 ).permitAll()   // 인증 불필요
 //                                .requestMatchers("/api/v1/admin/**").hasRole(Role.ROLE_ADMIN.getKey())
@@ -74,7 +77,7 @@ public class SecurityConfig {
 //                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(
-                        new JwtAuthorizationFilter(jwtTokenProvider, userDetailsService, refreshTokenService),  // JWT 인가 필터 추가
+                        new JwtAuthorizationFilter(jwtTokenProvider, userDetailsService, refreshTokenService, blacklistTokenService),  // JWT 인가 필터 추가
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterAt(customAuthenticationFilter(authConfig.getAuthenticationManager()), UsernamePasswordAuthenticationFilter.class)  // 자체 인증 필터 추가
