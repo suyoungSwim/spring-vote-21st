@@ -38,7 +38,9 @@ public class JwtAuthenticationSuccessHandler
         //refershToken 쿠키 담기
         long cookieAge = tokenProvider.getJwtProperties().getRefreshTokenExpiration() / 1000;   // 초 단위
         String refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
-                .httpOnly(true)
+                .httpOnly(true)   //필수
+                .sameSite("None") //필수
+                .secure(true)     //필수
                 .path("/")
                 .maxAge(cookieAge)
                 .build()

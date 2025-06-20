@@ -17,16 +17,16 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI openAPI() {
-        // /login 경로에 대한 설명 추가
+        // /login api 추가
         Schema<?> loginSchema = new ObjectSchema()
                 .addProperty("username", new StringSchema().example("string"))
                 .addProperty("password", new StringSchema().example("string"));
-
+        // request 형식 정의
         RequestBody loginRequestBody = new RequestBody()
                 .required(true)
                 .content(new Content().addMediaType("application/json",
                         new MediaType().schema(loginSchema)));
-
+        // response 형식 정의
         Operation loginOperation = new Operation()
                 .summary("로그인 (Spring Security 필터 사용)")
                 .addTagsItem("auth-controller")

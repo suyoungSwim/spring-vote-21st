@@ -56,7 +56,7 @@ public class GlobalResponseWrapper implements ResponseBodyAdvice {
             }
 
             else {
-                log.error("CustomException 말고 다른 Exception 터짐: {}", body);
+                log.error("CustomException 말고 다른 Exception 터짐: {}", body.toString());
                 commonResponse = CommonResponse.failure(body);
             }
         }
