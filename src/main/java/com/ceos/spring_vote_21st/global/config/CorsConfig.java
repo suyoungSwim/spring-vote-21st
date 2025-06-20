@@ -22,7 +22,7 @@ public class CorsConfig {
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:3000",
                 "https://next-vote-21th.vercel.app",
-                "https://hanihome-fe.local"
+            "https://hanihome-fe-test-r3a9ra9qa-gnos-projects-ab4a3758.vercel.app"
         ));
         // 허용할 HTTP 메서드
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
