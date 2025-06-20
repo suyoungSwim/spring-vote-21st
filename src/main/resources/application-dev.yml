@@ -23,3 +23,19 @@ jwt:
   secret: ${JWT_SECRET_KEY} # secret key는 base64로 인코딩해놨음
   access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}   # 1분(ms 단위)
   refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}  # 1일 (ms 단위)
+
+server:
+  port: 8084
+  ssl:
+    enabled: true
+    key-store: file:./keystore.p12
+    key-store-password: password
+    key-store-type: PKCS12
+#❯ keytool -genkeypair -alias hanihome-local -keyalg RSA -keysize 2048 -storetype PKCS12 \
+#  -keystore keystore.p12 -validity 3650 \
+#  -storepass password \
+#  -dname "CN=localhost"
+
+logging:
+  level:
+    org.springframework.security: DEBUG
