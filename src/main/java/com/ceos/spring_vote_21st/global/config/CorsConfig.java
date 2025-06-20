@@ -21,7 +21,8 @@ public class CorsConfig {
         // 허용할 오리진 패턴 (필요 시 특정 도메인만 허용)
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:3000",
-                "https://next-vote-21th.vercel.app"
+                "https://next-vote-21th.vercel.app",
+            "https://hanihome-fe-test-gnos-projects-ab4a3758.vercel.app"
         ));
         // 허용할 HTTP 메서드
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
