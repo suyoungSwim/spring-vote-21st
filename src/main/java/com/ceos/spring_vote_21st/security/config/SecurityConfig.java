@@ -69,7 +69,8 @@ public class SecurityConfig {
                                         // health
                                         "/health",
                                         "/health/new",
-                                        "/error"
+                                        "/error",
+                                        "/api/v1/cookie/*"
 
                                 ).permitAll()   // 인증 불필요
 //                                .requestMatchers("/api/v1/admin/**").hasRole(Role.ROLE_ADMIN.getKey())
