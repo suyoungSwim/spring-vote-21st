@@ -19,7 +19,10 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         // 허용할 오리진 패턴 (필요 시 특정 도메인만 허용)
-        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:3000",
+                "https://next-vote-21th.vercel.app"
+        ));
         // 허용할 HTTP 메서드
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         // 허용할 요청 헤더
@@ -32,4 +35,32 @@ public class CorsConfig {
         source.registerCorsConfiguration("/**", config);    // 모든 URI에 대해서
         return source;
     }
+    /*
+     *
+       @Bean
+    @Profile("local")              // 로컬 프로필
+    public CorsConfigurationSource devCorsConfig() {
+        CorsConfiguration c = new CorsConfiguration();
+        c.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "https://*.ngrok-free.app"
+        ));
+        c.setAllowCredentials(false);
+        applyCommon(c);
+        return source(c);
+    }
+
+    @Bean
+    @Profile("prod")               // 운영 프로필
+    public CorsConfigurationSource prodCorsConfig() {
+        CorsConfiguration c = new CorsConfiguration();
+        c.setAllowedOriginPatterns(List.of(
+                "https://web.example.com",
+                "https://admin.example.com"
+        ));
+        c.setAllowCredentials(true);
+        applyCommon(c);
+        return source(c);
+    }
+     */
 }
