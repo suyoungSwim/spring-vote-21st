@@ -39,10 +39,11 @@ public class JwtAuthenticationSuccessHandler
         long cookieAge = tokenProvider.getJwtProperties().getRefreshTokenExpiration() / 1000;   // 초 단위
         String refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)   //필수
-                .sameSite("None") //필수
-                .secure(true)     //필수
+                .sameSite("None") //필수, CORS가 도메인이 달라도 쿠키전송 & secure 필수
+                .secure(true)     //필수, https필수 -> 이것들을 해야 쿠키가 브라우저에 저장되고 전송됨
                 .path("/")
                 .maxAge(cookieAge)
+//                .domain("hanihome-api.dev")
                 .build()
                 .toString();
 
