@@ -48,6 +48,6 @@ public class SwaggerConfig {
 
                 .paths(new Paths().addPathItem("/api/v1/auth/signin", loginPathItem))
                 // Swagger-UI Try it out → "/api/..." 상대 경로로 호출
-                .addServersItem(new Server().url("/"));
+                .addServersItem(new Server().setUrl("https://hanihome-vote.shop"));
     }
 }
