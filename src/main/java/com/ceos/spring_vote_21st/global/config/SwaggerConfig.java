@@ -37,6 +37,8 @@ public class SwaggerConfig {
 
         PathItem loginPathItem = new PathItem().post(loginOperation);
 
+        Server server = new Server();
+        server.setUrl("https://hanihome-vote.shop);
         return new OpenAPI()
                 .info(new Info().title("API 문서").version("v1"))
                 .addSecurityItem(new SecurityRequirement().addList("AccessToken( Bearer없이 토큰만 넣어주세요:) )"))
@@ -48,6 +50,6 @@ public class SwaggerConfig {
 
                 .paths(new Paths().addPathItem("/api/v1/auth/signin", loginPathItem))
                 // Swagger-UI Try it out → "/api/..." 상대 경로로 호출
-                .addServersItem(new Server().setUrl("https://hanihome-vote.shop"));
+                .addServersItem(server);
     }
 }
