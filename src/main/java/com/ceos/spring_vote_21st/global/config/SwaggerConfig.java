@@ -38,7 +38,7 @@ public class SwaggerConfig {
         PathItem loginPathItem = new PathItem().post(loginOperation);
 
         Server server = new Server();
-        server.setUrl("https://hanihome-vote.shop);
+        server.setUrl("https://hanihome-vote.shop");
         return new OpenAPI()
                 .info(new Info().title("API 문서").version("v1"))
                 .addSecurityItem(new SecurityRequirement().addList("AccessToken( Bearer없이 토큰만 넣어주세요:) )"))
