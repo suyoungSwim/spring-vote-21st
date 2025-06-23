@@ -1,6 +1,7 @@
 package com.ceos.spring_vote_21st.vote.web.controller;
 
 import com.ceos.spring_vote_21st.global.response.dto.CommonResponse;
+import com.ceos.spring_vote_21st.vote.domain.enums.Section;
 import com.ceos.spring_vote_21st.vote.service.ElectionService;
 import com.ceos.spring_vote_21st.vote.web.dto.request.CandidateAddRequestDTO;
 import com.ceos.spring_vote_21st.vote.web.dto.request.CandidateCreateRequestDTO;
@@ -36,8 +37,8 @@ public class ElectionController {
 
     // 전체 조회
     @GetMapping
-    public ResponseEntity<CommonResponse<List<ElectionResponseDTO>>> getAllElections() {
-        List<ElectionResponseDTO> list = electionService.getAllElections();
+    public ResponseEntity<CommonResponse<List<ElectionResponseDTO>>> getAllElections(@RequestParam(required = false) Section section) {
+        List<ElectionResponseDTO> list = electionService.getAllElections(section);
         return ResponseEntity.ok(CommonResponse.success(list));
     }
 
