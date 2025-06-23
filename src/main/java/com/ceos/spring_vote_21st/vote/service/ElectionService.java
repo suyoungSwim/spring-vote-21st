@@ -4,7 +4,6 @@ import com.ceos.spring_vote_21st.global.exception.CustomException;
 import com.ceos.spring_vote_21st.global.response.domain.ServiceCode;
 import com.ceos.spring_vote_21st.member.repository.MemberRepository;
 import com.ceos.spring_vote_21st.vote.domain.*;
-import com.ceos.spring_vote_21st.vote.domain.enums.Section;
 import com.ceos.spring_vote_21st.vote.repository.ElectionRepository;
 import com.ceos.spring_vote_21st.vote.repository.VoteRepository;
 import com.ceos.spring_vote_21st.vote.web.dto.request.CandidateAddRequestDTO;
@@ -66,17 +65,12 @@ public class ElectionService {
     /**
      * 전체 조회
      */
-    public List<ElectionResponseDTO> getAllElections(Section section) {
-        List<Election> elections = (section == null) ?
-                electionRepository.findAll() :
-                electionRepository.findBySection(section);
-
-        return elections.stream()
+    public List<ElectionResponseDTO> getAllElections() {
+        return electionRepository.findAll()
+                .stream()
                 .map(ElectionResponseDTO::from)
                 .collect(Collectors.toList());
     }
-
-
 /*
 
     */
