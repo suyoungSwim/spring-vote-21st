@@ -194,7 +194,10 @@ public class ElectionService {
 
         findElection.removeCandidate(findCandidate);
     }
-
+    @Transactional
+    public void deleteAll() {
+        electionRepository.deleteAll();
+    }
     /**
      * other business
      * */
@@ -217,7 +220,5 @@ public class ElectionService {
         return ElectionResultDTO.from(ElectionResponseDTO.from(findElection), voteCounts);
     }
 
-    public void deleteAll() {
-        electionRepository.deleteAll();
-    }
+
 }
