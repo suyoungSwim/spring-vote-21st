@@ -23,6 +23,7 @@ public class CorsConfig {
                 "http://localhost:3000",
                 "https://next-vote-21th.vercel.app",
             "https://hanihome-fe-test-gnos-projects-ab4a3758.vercel.app",
+            "https://hanihome-vote.shop",
             "https://hanihome-fe-test.vercel.app"
         ));
         // 허용할 HTTP 메서드
