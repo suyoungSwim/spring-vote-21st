@@ -22,7 +22,7 @@ public enum ServiceCode {
     ENTITY_NOT_EXISTS(HttpStatus.BAD_REQUEST, "해당 엔티티가 없습니다."),
     POSITION_NOT_MATCH(HttpStatus.BAD_REQUEST, "자신과 다른 파트에 투표했습니다"),
     CANNOT_VOTE_SAME_TEAM(HttpStatus.BAD_REQUEST, "자신의 팀에 투표할 수 없습니다"),
-    DUPLICATE_VOTE(HttpStatus.BAD_REQUEST, "중복투표할 수 없습니다"),
+    DUPLICATE_VOTE(HttpStatus.BAD_REQUEST, "이미 해당 선거에 투표했습니다"),
     //jwt
     INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "리프레시 토큰 검증에 실패했습니다."),
     TOKEN_MISMATCH(HttpStatus.BAD_REQUEST, "연관된 토큰이 아닙니다"),

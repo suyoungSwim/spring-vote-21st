@@ -29,7 +29,7 @@ public class VoteService {
     private final VoteRepository voteRepository;
 
     @Transactional
-    public Long voteToCandidate(VoteCreateRequestDTO dto) {
+    public Long voteToCandidate(VoteCreateRequestDTO dto, Long voterId) {
         //find
         Election findElection = electionRepository.findById(dto.getElectionId())
                 .orElseThrow(() -> new CustomException(ServiceCode.ENTITY_NOT_EXISTS));
@@ -38,13 +38,13 @@ public class VoteService {
                 .filter(candidate -> candidate.getId().equals(dto.getCandidateId()))
                 .findFirst()
                 .orElseThrow(() -> new CustomException(ServiceCode.ENTITY_NOT_EXISTS));
-        Member findMember = memberRepository.findById(dto.getMemberId())
+        Member findMember = memberRepository.findById(voterId)
                 .orElseThrow(() -> new CustomException(ServiceCode.ENTITY_NOT_EXISTS));
 
 
         //create
         //1인 한번 투표
-        if (voteRepository.existsByMemberAndElection(findMember, findElection))
+        if (voteRepository.findVoteForUpdate(findMember.getId(), findElection.getId()).isPresent())
             throw new CustomException(ServiceCode.DUPLICATE_VOTE);
 
 
