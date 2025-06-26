@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface VoteRepository extends JpaRepository<Vote, Long> {
     List<Vote> findAllByCandidateAndElection(Candidate candidate, Election election);
 
-    @Query(value = "select * from Vote v where v.member_id=:memberId and v.election_id=:electionId for update", nativeQuery = true)
+    @Query(value = "select * from vote v where v.member_id=:memberId and v.election_id=:electionId for update", nativeQuery = true)
     Optional<Vote> findVoteForUpdate(@Param("memberId") Long memberId, @Param("electionId") Long electionId);
 
     Optional<Vote> findByElectionIdAndMemberId(Long electionId, Long memberId);
