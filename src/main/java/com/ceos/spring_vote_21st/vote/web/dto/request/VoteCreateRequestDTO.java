@@ -8,6 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VoteCreateRequestDTO {
     private Long electionId;
-    private Long memberId;
     private Long candidateId;
 }

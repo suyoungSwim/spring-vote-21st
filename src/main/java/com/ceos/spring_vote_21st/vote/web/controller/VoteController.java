@@ -24,8 +24,9 @@ public class VoteController {
      */
     @PostMapping("/elections/{electionId}/votes")
     public ResponseEntity<CommonResponse<Long>> voteToCandidate(
-            @RequestBody VoteCreateRequestDTO dto) {
-        Long voteId = voteService.voteToCandidate(dto);
+            @RequestBody VoteCreateRequestDTO dto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long voteId = voteService.voteToCandidate(dto, userDetails.getUserId());
         return ResponseEntity.ok(CommonResponse.success(voteId));
     }
 

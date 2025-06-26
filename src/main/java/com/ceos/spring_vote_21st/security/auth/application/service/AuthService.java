@@ -129,6 +129,7 @@ public class AuthService {
         }
         // refreshToken 삭제
         Long userId = jwtTokenProvider.getUserIdFromToken(accessToken);
+        //TODO: refreshToken은 검증을 전혀 안하고 있음. refreshToken 유효성 검증이 필요. & accessToken,refreshToken모두 무효화하게 되므로 둘의 소유자 일치 여부도 필요
         refreshTokenService.deleteToken(userId);
     }
 
