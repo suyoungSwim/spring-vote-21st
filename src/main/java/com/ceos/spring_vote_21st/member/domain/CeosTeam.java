@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum CeosTeam {
-    POP_UPCYCLE("팝업사이클"),
+    LOOPZ("룹즈"),
     HANI_HOME("하니홈"),
     DEAR_DREAM("이어드림"),
     PROMESA("프로메사"),
