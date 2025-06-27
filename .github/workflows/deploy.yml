@@ -36,7 +36,26 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             set -e
+            echo "Stopping containers..."
             sudo docker-compose down
-            sudo docker system prune -f
+            CONTAINER_ID=$(sudo docker ps -qf "ancestor=${{ secrets.DOCKERHUB_USERNAME }}/vote-server:latest")
+            
+            if [ -n "$CONTAINER_ID" ]; then
+              USED_ID=$(sudo docker inspect "$CONTAINER_ID" --format='{{.Image}}')
+            else
+              USED_ID="none"
+            fi
+            
+            echo "Removing unused vote-server images..."
+            for IMG_ID in $(sudo docker images ${{ secrets.DOCKERHUB_USERNAME }}/vote-server -q); do
+              if [ "$IMG_ID" != "$USED_ID" ]; then
+                echo "Removing unused image: $IMG_ID"
+                sudo docker rmi $IMG_ID || true
+              fi
+            done
+            
+            echo "Pulling latest image..."
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/vote-server:latest
+            
+            echo "Starting up containers..."
             sudo docker-compose up -d
