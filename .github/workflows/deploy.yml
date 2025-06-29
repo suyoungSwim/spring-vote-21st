@@ -1,0 +1,61 @@
+name: CI/CD Deploy
+
+on:
+  push:
+    branches: [develop] #dev에 push 될 때 마다 실행
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest #GitHub에서 제공하는 ubuntu-latest에서 실행
+
+    steps:
+      - name: Checkout repository #깃허브 저장소의 코드를 runner로 가져옴
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx #도커 setup
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/vote-server:latest
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+            echo "Stopping containers..."
+            sudo docker-compose down
+            CONTAINER_ID=$(sudo docker ps -qf "ancestor=${{ secrets.DOCKERHUB_USERNAME }}/vote-server:latest")
+            
+            if [ -n "$CONTAINER_ID" ]; then
+              USED_ID=$(sudo docker inspect "$CONTAINER_ID" --format='{{.Image}}')
+            else
+              USED_ID="none"
+            fi
+            
+            echo "Removing unused vote-server images..."
+            for IMG_ID in $(sudo docker images ${{ secrets.DOCKERHUB_USERNAME }}/vote-server -q); do
+              if [ "$IMG_ID" != "$USED_ID" ]; then
+                echo "Removing unused image: $IMG_ID"
+                sudo docker rmi $IMG_ID || true
+              fi
+            done
+            
+            echo "Pulling latest image..."
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/vote-server:latest
+            
+            echo "Starting up containers..."
+            sudo docker-compose up -d

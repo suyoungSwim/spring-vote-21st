@@ -1,8 +1,8 @@
 package com.ceos.spring_vote_21st.security.auth.application.jwt;
 
 
-import com.ceos.spring_vote_21st.global.error.CustomException;
-import com.ceos.spring_vote_21st.global.error.ErrorCode;
+import com.ceos.spring_vote_21st.global.exception.CustomException;
+import com.ceos.spring_vote_21st.global.response.domain.ServiceCode;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.refresh.RefreshTokenService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -68,11 +68,11 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException e) {
             return false;
         } catch (UnsupportedJwtException e) {
-            throw new CustomException(ErrorCode.UNSUPPORTED_TOKEN);
+            throw new CustomException(ServiceCode.UNSUPPORTED_TOKEN);
         } catch (MalformedJwtException e) {
-            throw new CustomException(ErrorCode.MALFORMED_TOKEN);
+            throw new CustomException(ServiceCode.MALFORMED_TOKEN);
         } catch (SecurityException | IllegalArgumentException e) {
-            throw new CustomException(ErrorCode.INVALID_TOKEN);
+            throw new CustomException(ServiceCode.INVALID_TOKEN);
         }
     }
 
@@ -86,7 +86,7 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException e) {
             return Long.parseLong(e.getClaims().getSubject());
         } catch (Exception e) {
-            throw new CustomException(ErrorCode.INVALID_TOKEN);
+            throw new CustomException(ServiceCode.INVALID_TOKEN);
         }
     }
 
@@ -101,7 +101,7 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException e) {
             return e.getClaims().get("username", String.class);
         } catch (Exception e) {
-            throw new CustomException(ErrorCode.INVALID_TOKEN);
+            throw new CustomException(ServiceCode.INVALID_TOKEN.INVALID_TOKEN);
         }
     }
 
@@ -147,7 +147,7 @@ public class JwtTokenProvider {
         String savedRefreshToken = refreshTokenService.getToken(userId);
 
         if (!refreshToken.equals(savedRefreshToken)) {
-            throw new CustomException(ErrorCode.TOKEN_MISMATCH);
+            throw new CustomException(ServiceCode.TOKEN_MISMATCH);
         }
 
     }

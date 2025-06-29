@@ -6,6 +6,7 @@ import com.ceos.spring_vote_21st.security.auth.user.detail.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -28,17 +29,21 @@ public class JwtAuthenticationSuccessHandler
         String accessToken = tokenProvider.generateAccessToken(userDetails.getUserId(), userDetails.getUsername());
         String refreshToken = tokenProvider.generateRefreshToken(userDetails.getUserId(), userDetails.getUsername());
 
-        refreshService.saveToken(userDetails.getUserId(), refreshToken);
 
         // accessToken 헤더 담기
         response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer "+accessToken);
 
+        //refreshToken 서버 저장
+        refreshService.saveToken(userDetails.getUserId(), refreshToken);
         //refershToken 쿠키 담기
         long cookieAge = tokenProvider.getJwtProperties().getRefreshTokenExpiration() / 1000;   // 초 단위
         String refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
-                .httpOnly(true)
+                .httpOnly(true)   //필수
+                .sameSite("None") //필수, CORS가 도메인이 달라도 쿠키전송 & secure 필수
+                .secure(true)     //필수, https필수 -> 이것들을 해야 쿠키가 브라우저에 저장되고 전송됨
                 .path("/")
                 .maxAge(cookieAge)
+//                .domain("hanihome-api.dev")
                 .build()
                 .toString();
 

@@ -1,8 +1,9 @@
 package com.ceos.spring_vote_21st.security.auth.application.filter;
 
-import com.ceos.spring_vote_21st.global.error.CustomException;
-import com.ceos.spring_vote_21st.global.error.ErrorCode;
+import com.ceos.spring_vote_21st.global.exception.CustomException;
+import com.ceos.spring_vote_21st.global.response.domain.ServiceCode;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.JwtTokenProvider;
+import com.ceos.spring_vote_21st.security.auth.application.jwt.blacklist.BlacklistTokenService;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.refresh.RefreshTokenService;
 import com.ceos.spring_vote_21st.security.auth.user.detail.CustomUserDetails;
 import jakarta.servlet.FilterChain;
@@ -38,12 +39,20 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
     private final RefreshTokenService refreshTokenService;
+    private final BlacklistTokenService blacklistTokenService;
+
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 헤더 Authorization 필드에서 토큰 추출
         String accessToken = getTokenFromRequest(request);
 
+        // 인증없이도 조회가능한 URI를 위해서 토큰 없이도 다음 필터로 넘긴다.
+        if (accessToken == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         // token 검증 (+ access token 재발행)
         validateAndReissue(request, response, accessToken);
 
@@ -66,6 +75,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
      * 토큰 검증 및 만료시 재발행
      * */
     private void validateAndReissue(HttpServletRequest request, HttpServletResponse response, String accessToken) {
+        // 블랙리스트 검증
+        if (blacklistTokenService.isBlacklisted(accessToken)) {
+            log.info("해당 토큰은 블랙리스트입니다, token: {}", accessToken);
+
+            throw new CustomException(ServiceCode.TOKEN_LOGOUT);
+        }
+        // 토큰 검증
         if (!jwtTokenProvider.validateToken(accessToken)) { // access 토큰이 만료된거면..
             log.info("Token Expired: 토큰 재발행 시작");
             Cookie refreshCookie = WebUtils.getCookie(request, "refreshToken");
@@ -74,7 +90,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             if (refreshCookie != null) {
                 refreshToken = refreshCookie.getValue();
                 // 1.refreshToken 서명 검증
-                if(!jwtTokenProvider.validateToken(refreshToken)) throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+                if(!jwtTokenProvider.validateToken(refreshToken)) throw new CustomException(ServiceCode.INVALID_REFRESH_TOKEN);
 
                 // 2. 본인 refresh token인지 검증
                 jwtTokenProvider.validateTokenOwnership(accessToken, refreshToken);
@@ -103,7 +119,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String requestURI = request.getRequestURI();
 
-        return requestURI.startsWith("/api/v1/users/signup") || requestURI.equals("/api/v1/users/signin") || requestURI.equals("/api/v1/users/logout") || requestURI.equals("/api/v1/health");
+
+        return requestURI.startsWith(
+                "/api/v1/auth/signup") ||
+                requestURI.equals("/api/v1/auth/signin")
+                || requestURI.equals("/api/v1/auth/logout")
+                || requestURI.equals("/health")
+                || requestURI.equals("/swagger-ui.html")
+                || requestURI.startsWith("/swagger-ui")
+                || requestURI.startsWith("/v3/api-docs")
+                ;
+
     }
 
 }

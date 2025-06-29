@@ -1,11 +1,10 @@
 package com.ceos.spring_vote_21st.security.auth.application.service;
 
-import com.ceos.spring_vote_21st.global.error.CustomException;
-import com.ceos.spring_vote_21st.global.error.ErrorCode;
+import com.ceos.spring_vote_21st.global.exception.CustomException;
+import com.ceos.spring_vote_21st.global.response.domain.ServiceCode;
 import com.ceos.spring_vote_21st.member.domain.Member;
 import com.ceos.spring_vote_21st.member.domain.Role;
 import com.ceos.spring_vote_21st.member.repository.MemberRepository;
-import com.ceos.spring_vote_21st.member.web.dto.MemberResponseDTO;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.JwtTokenProvider;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.blacklist.BlacklistTokenService;
 import com.ceos.spring_vote_21st.security.auth.application.jwt.refresh.RefreshTokenService;
@@ -15,9 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -36,8 +32,13 @@ public class AuthService {
     public Long signUp(SignUpDTO dto) {
         // id  중복 체크
         String username = dto.getUsername();
-        if (!memberRepository.findByUsername(username).isEmpty()) {
-            throw new CustomException(ErrorCode.USERNAME_ALREADY_EXISTS);
+        if (isUsernameExists(username)) {
+            throw new CustomException(ServiceCode.USERNAME_ALREADY_EXISTS);
+        }
+
+        // email 중복 체크
+        if (isEmailExists(dto.getEmail())) {
+            throw new CustomException(ServiceCode.EMAIL_ALREADY_EXISTS);
         }
 
         Member entity = Member.builder()
@@ -52,6 +53,16 @@ public class AuthService {
 
         return memberRepository.save(entity).getId();
     }
+
+    public boolean isEmailExists(String email) {
+        return memberRepository.existsByEmail(email);
+    }
+
+    public boolean isUsernameExists(String username) {
+        return memberRepository.findByUsername(username).isPresent();
+    }
+
+
 
 /*
     public String signIn(SignInDTO dto) {
@@ -118,8 +129,8 @@ public class AuthService {
         }
         // refreshToken 삭제
         Long userId = jwtTokenProvider.getUserIdFromToken(accessToken);
+        //TODO: refreshToken은 검증을 전혀 안하고 있음. refreshToken 유효성 검증이 필요. & accessToken,refreshToken모두 무효화하게 되므로 둘의 소유자 일치 여부도 필요
         refreshTokenService.deleteToken(userId);
     }
-
 
 }
